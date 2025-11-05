@@ -32,9 +32,17 @@ public class User {
     protected User() {
     }
 
+    public List<Post> getPosts() {
+        return posts;
+    }
+
+    public void setPosts(List<Post> posts) {
+        this.posts = posts;
+    }
+
     @OneToMany(mappedBy = "user")  //일대다 관계, mappedBy 특정관계를 가지는 필드 설정
     @JsonIgnore
-    private List<Post> post;
+    private List<Post> posts;
 
     public User(Integer id, String name, LocalDate birthDate) {
         this.id = id;

@@ -2,6 +2,7 @@ package io.jongbeom.springboot.intellij.restfulwebsnsservices.user;
 
 //WebMvcLinkBuilder에 있는 모든 메소드에 대한 정적 임포트
 
+import io.jongbeom.springboot.intellij.restfulwebsnsservices.jpa.PostRepository;
 import io.jongbeom.springboot.intellij.restfulwebsnsservices.jpa.UserRepository;
 import jakarta.validation.Valid;
 import org.springframework.hateoas.EntityModel;
@@ -21,9 +22,11 @@ import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.methodOn;
 public class UserJpaResource {
 
     private UserRepository repository;
+    private PostRepository postRepository;
 
-    public UserJpaResource(UserRepository repository){
+    public UserJpaResource(UserRepository repository, PostRepository postRepository){
         this.repository=repository;
+        this.postRepository=postRepository;
     }
 
     //GET /users
@@ -62,6 +65,19 @@ public class UserJpaResource {
     }
 
 
+    //GET /users/{id}/posts
+    @GetMapping("/jpa/users/{id}/posts")
+    public List<Post> retrievePostsForUser(@PathVariable int id){
+        Optional<User> user =repository.findById(id);
+
+        //페이지 예외 처리
+        if(user.isEmpty())
+            throw new UserNotFoundException("id:"+id);
+
+        return user.get().getPosts();
+    }
+
+
 
 
     //POST /users
@@ -79,6 +95,27 @@ public class UserJpaResource {
         return ResponseEntity.created(location).build();
     }
 
+
+    //GET /users/{id}/posts
+    @PostMapping("/jpa/users/{id}/posts")
+    public ResponseEntity<Object> createPostsForUser(@PathVariable int id,@Valid @RequestBody Post post){
+        Optional<User> user =repository.findById(id);
+
+        //페이지 예외 처리
+        if(user.isEmpty())
+            throw new UserNotFoundException("id:"+id);
+
+        post.setUser(user.get());
+
+        Post savePost= postRepository.save(post);
+        URI location= ServletUriComponentsBuilder   // spring의 http 요청정보 기반 URI를 쉽게 만들어주는 헬퍼 클래스
+                .fromCurrentRequest()               // 현재 요청 URL을 가져온다.
+                .path("/{id}")                      // 경로 추가
+                .buildAndExpand(savePost.getId())  // {id} 변수를 실제값으로 치환 savedUser.getId값
+                .toUri();                           // URI 객체로 변환
+        //스프링 프레임워크 클래스, http 패키지 URI loaction 헤더를 받는다
+        return ResponseEntity.created(location).build();
+    }
 
 
 }
