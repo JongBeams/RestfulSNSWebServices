@@ -15,6 +15,9 @@ public class User {
     @Past(message = "생일은 과거 날짜로 지정해야 한다.")
     private LocalDate birthDate;
 
+    public User() {
+    }
+
     public User(Integer id, String name, LocalDate birthDate) {
         this.id = id;
         this.name = name;
