@@ -21,18 +21,18 @@ import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.methodOn;
 @RestController
 public class UserJpaResource {
 
-    private UserRepository repository;
+    private UserRepository userRepository;
     private PostRepository postRepository;
 
-    public UserJpaResource(UserRepository repository, PostRepository postRepository){
-        this.repository=repository;
+    public UserJpaResource(UserRepository userRepository, PostRepository postRepository){
+        this.userRepository = userRepository;
         this.postRepository=postRepository;
     }
 
     //GET /users
     @GetMapping("/jpa/users")
     public List<User> retrieveAllUsers(){
-        return repository.findAll();
+        return userRepository.findAll();
     }
 
     //EntityModel 객체 모델
@@ -40,7 +40,7 @@ public class UserJpaResource {
     //GET /users/{id}
     @GetMapping("/jpa/users/{id}")
     public EntityModel<User> retrieveUser(@PathVariable int id){//EntityModel 도메인 객체를 래핑하여 링크를 추가
-        Optional<User> user =repository.findById(id);
+        Optional<User> user = userRepository.findById(id);
 
 
         //페이지 예외 처리
@@ -61,14 +61,14 @@ public class UserJpaResource {
     //GET /users/{id}
     @DeleteMapping("/jpa/users/{id}")
     public void deleteUser(@PathVariable int id){
-        repository.deleteById(id);
+        userRepository.deleteById(id);
     }
 
 
     //GET /users/{id}/posts
     @GetMapping("/jpa/users/{id}/posts")
     public List<Post> retrievePostsForUser(@PathVariable int id){
-        Optional<User> user =repository.findById(id);
+        Optional<User> user = userRepository.findById(id);
 
         //페이지 예외 처리
         if(user.isEmpty())
@@ -84,7 +84,7 @@ public class UserJpaResource {
     @PostMapping("/jpa/users")
     public ResponseEntity<Object> createUser(@Valid @RequestBody User user){
         //@Valid 프로퍼티나 메소드인자 반환 타입의 유효성을 확인하기 위해 표시
-        User savedUser =repository.save(user);
+        User savedUser = userRepository.save(user);
         // /user/4 => /user/{id} user.getId
         URI location= ServletUriComponentsBuilder   // spring의 http 요청정보 기반 URI를 쉽게 만들어주는 헬퍼 클래스
                 .fromCurrentRequest()               // 현재 요청 URL을 가져온다.
@@ -99,7 +99,7 @@ public class UserJpaResource {
     //GET /users/{id}/posts
     @PostMapping("/jpa/users/{id}/posts")
     public ResponseEntity<Object> createPostsForUser(@PathVariable int id,@Valid @RequestBody Post post){
-        Optional<User> user =repository.findById(id);
+        Optional<User> user = userRepository.findById(id);
 
         //페이지 예외 처리
         if(user.isEmpty())
