@@ -1,9 +1,11 @@
 package io.jongbeom.springboot.intellij.restfulwebsnsservices.filitering;
 
+import com.fasterxml.jackson.annotation.JsonFilter;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 
-@JsonIgnoreProperties({"field1","field2"}) //JsonIgnore를 클래스 단위로 지정
+//@JsonIgnoreProperties({"field1","field2"}) //JsonIgnore를 클래스 단위로 지정
+@JsonFilter("SomeBeanFilter")   // 동적 필터 ID값등록
 public class SomeBean {
     private String field1;
 
