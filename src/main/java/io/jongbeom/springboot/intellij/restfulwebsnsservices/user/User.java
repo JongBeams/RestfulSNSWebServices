@@ -1,5 +1,6 @@
 package io.jongbeom.springboot.intellij.restfulwebsnsservices.user;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
 import jakarta.validation.constraints.Past;
 import jakarta.validation.constraints.Size;
 
@@ -9,10 +10,12 @@ public class User {
     private Integer id;
 
     @Size(min=2, message = "이름 크기는 최소 2글자 이상")
+    @JsonProperty("user_name") //JSON 직렬화/역직렬화 시 필드와 JSON 속성 간의 매핑을 제어
     private String name;
 
     //과거 날짜 제한 조건
     @Past(message = "생일은 과거 날짜로 지정해야 한다.")
+    @JsonProperty("birth_date")
     private LocalDate birthDate;
 
     public User() {
