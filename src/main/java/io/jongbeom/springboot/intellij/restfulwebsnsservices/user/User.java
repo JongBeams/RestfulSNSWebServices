@@ -1,10 +1,18 @@
 package io.jongbeom.springboot.intellij.restfulwebsnsservices.user;
 
+import jakarta.validation.constraints.Past;
+import jakarta.validation.constraints.Size;
+
 import java.time.LocalDate;
 
 public class User {
     private Integer id;
+
+    @Size(min=2, message = "이름 크기는 최소 2글자 이상")
     private String name;
+
+    //과거 날짜 제한 조건
+    @Past(message = "생일은 과거 날짜로 지정해야 한다.")
     private LocalDate birthDate;
 
     public User(Integer id, String name, LocalDate birthDate) {

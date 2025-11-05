@@ -1,8 +1,12 @@
 package io.jongbeom.springboot.intellij.restfulwebsnsservices.exception;
 
 import io.jongbeom.springboot.intellij.restfulwebsnsservices.user.UserNotFoundException;
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.HttpStatusCode;
 import org.springframework.http.ResponseEntity;
+import org.springframework.lang.Nullable;
+import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.context.request.WebRequest;
@@ -33,6 +37,17 @@ public class CustomizedResponseEntityExceptionHandler extends ResponseEntityExce
                 ex.getMessage(),                                // 에러 메시지
                 request.getDescription(false));    // 요청 경로
         return new ResponseEntity<ErrorDetails>(errorDetails, HttpStatus.NOT_FOUND);
+    }
+
+    // @Valid 검증 실패 시 자동으로 호출되는 예외 처리 메서드
+    @Override
+    protected ResponseEntity<Object> handleMethodArgumentNotValid(MethodArgumentNotValidException ex, HttpHeaders headers, HttpStatusCode status, WebRequest request) {
+        ErrorDetails errorDetails = new ErrorDetails(
+                LocalDateTime.now(),                                // 에러 발생 시간
+                "총 에러 갯수 :"+ex.getErrorCount()+" , 첫번째 에러 : "+ex.getFieldError().getDefaultMessage(),             // 지정한 에러 메시지만 호출
+                request.getDescription(false));       // 요청 경로
+
+        return new ResponseEntity(errorDetails, HttpStatus.BAD_REQUEST);
     }
 
 

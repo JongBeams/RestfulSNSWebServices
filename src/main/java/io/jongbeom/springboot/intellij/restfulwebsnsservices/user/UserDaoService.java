@@ -34,13 +34,16 @@ public class UserDaoService {
         return user;
     }
 
-
-
-
     public User findOne(int id){
         Predicate<? super User> predicate= user -> user.getId().equals(id);
         return users.stream().filter(predicate).findFirst().orElse(null);//else 반환값 함수형으로
     }
+
+    public void deleteById(int id){
+        Predicate<? super User> predicate= user -> user.getId().equals(id);
+        users.removeIf(predicate);
+    }
+
 
 
 //    public List<User> findAll();
