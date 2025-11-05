@@ -1,7 +1,11 @@
 package io.jongbeom.springboot.intellij.restfulwebsnsservices.user;
 
+//WebMvcLinkBuilder에 있는 모든 메소드에 대한 정적 임포트
+import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.*;
 
 import jakarta.validation.Valid;
+import org.springframework.hateoas.EntityModel;
+import org.springframework.hateoas.server.mvc.WebMvcLinkBuilder;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
@@ -24,16 +28,26 @@ public class UserResource {
         return service.findAll();
     }
 
+    //EntityModel 객체 모델
+    //WebMvcLinkBuilder
     //GET /users/{id}
     @GetMapping("/users/{id}")
-    public User retrieveUser(@PathVariable int id){
+    public EntityModel<User> retrieveUser(@PathVariable int id){//EntityModel 도메인 객체를 래핑하여 링크를 추가
         User user =service.findOne(id);
 
         //페이지 예외 처리
         if(user==null)
             throw new UserNotFoundException("id:"+id);
 
-        return user;
+        //래퍼(Wrapper) 객체로 변환
+        EntityModel<User> entityModel =EntityModel.of(user);
+        // spring mvc 컨트롤러를 가리키는 링크 인스턴스의 구축을 용이하게 하는 빌더
+        //
+        WebMvcLinkBuilder link = linkTo(methodOn(this.getClass()) //현재 컨트롤러 프록시 인스턴스 생성, 실제 실행되지 않고, 메소드의 매핑 정보만 추출
+                .retrieveAllUsers()); // retrieveAllUsers 메소드를 "가짜로" 호출, @RequestMapping 정보(URL 경로)를 가져온다.
+        entityModel.add(link.withRel("all-users")); //생성된 링크에 "all-users"라는 관계(relation) 이름을 부여하여 entityModel에 추가
+
+        return entityModel;
     }
 
     //GET /users/{id}
